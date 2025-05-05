@@ -6,8 +6,11 @@ import os
 import random
 from threading import Lock
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Vitals API")
+
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173"], allow_credentials=True, allow_headers=["*"], allow_methods=["*"])
 
 DATA_FILE = "vitals.json"
 
@@ -54,7 +57,7 @@ class VitalsStore:
             self.data["heart_rate"] = random.randint(75, 100)
     
         self.data["spo2"] = vitals.spo2
-        self.data["temperature"] = vitals.temperature
+        self.data["temperature"] = round(vitals.temperature, 1)
         self.data["ecg"].append(vitals.ecg)
         self.data["ecg"] = self.data["ecg"][-30:]
         self.data["last_updated"] = datetime.utcnow().isoformat()
